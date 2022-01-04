@@ -174,6 +174,45 @@
       </div>
     </div>
   </div>
+
+  {{-- showModal --}}
+  <div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Lihat</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <table style="width: 100%">
+                <tr>
+                    <th>Kode Sidang</th>
+                    <th>:</th>
+                    <td id="showKode"></td>
+                </tr>
+                <tr>
+                    <th>Judul</th>
+                    <th>:</th>
+                    <td id="showJudul"></td>
+                </tr>
+                <tr>
+                    <th>Status</th>
+                    <th>:</th>
+                    <td id="showStatus" class="text-uppercase"></td>
+                </tr>
+                <tr id="revisi">
+                    <th>Komentar</th>
+                    <th>:</th>
+                    <td id="showKomentar"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 @endsection
 
 @push('scripts')
@@ -191,6 +230,31 @@
                 $('#validasiModal').modal('show')
                 $('#validasiStatus').val(data.sidang.status).change()
                 $('#validasiId').text(data.sidang.id)
+            },
+            error : (data) => {
+                alert('gagal')
+            }
+        })
+    }
+
+    function lihatFunc(e){
+        console.log(e)
+        $.ajax({
+            type : 'GET',
+            url : "/sidang/"+e+"/edit",
+            cache : false,
+            contentType : false,
+            processData : false,
+            success : (data) => {
+                $('#showModal').modal('show')
+                $('#showKode').text(data.sidang.kode_sidang)
+                $('#showJudul').text(data.sidang.judul_ta)
+                $('#showStatus').text(data.sidang.status)
+                if (data.sidang.status == 'revisi') {
+                    $('#showKomentar').text(data.revisi.komentar)
+                }else{
+                    $('#revisi').hide()
+                }
             },
             error : (data) => {
                 alert('gagal')

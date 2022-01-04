@@ -6,6 +6,7 @@ use App\Models\Revisi;
 use App\Models\Sidang;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Js;
 use Yajra\Datatables\Datatables;
 
@@ -23,8 +24,13 @@ class SidangController extends Controller
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('action', function($row){
+
+                        if (Auth::user()->roles == 'paa' || Auth::user()->roles == 'dosen') {
+                            $btn = '<button class="edit btn btn-secondary btn-sm" data-id="'.$row->id.'" onclick="lihatFunc('.$row->id.')">Show</button><button class="edit btn btn-success btn-sm" data-id="'.$row->id.'" onclick="editFunc('.$row->id.')">Edit</button><button onclick="deleteFunc('.$row->id.')" class="edit ms-2 btn btn-danger btn-sm">Hapus</button><button onclick="showFunc('.$row->id.')" class="edit ms-2 btn btn-warning btn-sm">Validasi</button><a target="_blank" href="/sidang/'.$row->id.'/download" class="btn btn-sm ms-2 btn-info">Download</a>';
+                        }else{
+                            $btn = '<button class="edit btn btn-secondary btn-sm" data-id="'.$row->id.'" onclick="lihatFunc('.$row->id.')">Show</button><button class="edit btn btn-success btn-sm" data-id="'.$row->id.'" onclick="editFunc('.$row->id.')">Edit</button><button onclick="deleteFunc('.$row->id.')" class="edit ms-2 btn btn-danger btn-sm">Hapus</button><a target="_blank" href="/sidang/'.$row->id.'/download" class="btn btn-sm ms-2 btn-info">Download</a>';
+                        }
      
-                           $btn = '<button class="edit btn btn-success btn-sm" data-id="'.$row->id.'" onclick="editFunc('.$row->id.')">Edit</button><button onclick="deleteFunc('.$row->id.')" class="edit ms-2 btn btn-danger btn-sm">Hapus</button><button onclick="showFunc('.$row->id.')" class="edit ms-2 btn btn-warning btn-sm">Validasi</button><a target="_blank" href="/sidang/'.$row->id.'/download" class="btn btn-sm ms-2 btn-info">Download</a>';
     
                             return $btn;
                     })
@@ -115,9 +121,11 @@ class SidangController extends Controller
     public function edit($id)
     {
         $sidang = Sidang::find($id);
+        $revisi = Revisi::where('sidang_id', $id)->first(); 
 
         return response()->json([
-            'sidang' => $sidang
+            'sidang' => $sidang,
+            'revisi' => $revisi
         ]);
     }
 
